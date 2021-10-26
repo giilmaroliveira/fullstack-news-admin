@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import { ApiService } from '../../services/ApiService';
 import UserAuth from '../../model/UserAuth';
 import router from 'next/router';
@@ -6,6 +6,8 @@ import router from 'next/router';
 interface AuthContextProps {
   login?: (email: string, password: string) => Promise<void>;
   logout?: () => void;
+  userLogged?: boolean;
+  getToken?: () => string;
 }
 
 const AuthContext = createContext<AuthContextProps>({});
@@ -26,8 +28,7 @@ export function AuthProvider(props: any) {
 
     if (user?.auth) {
       setToken(user.token);
-      setUserLogged(true);
-      router.push('users');
+      manageSession();
     }
   }
 
@@ -49,10 +50,27 @@ export function AuthProvider(props: any) {
     sessionStorage.removeItem(sessionKey);
   }
 
+  function manageSession() {
+    const token = getToken();
+
+    if (token) {
+      setUserLogged(true);
+      router.push('/profiles');
+    } else {
+      router.push('/authentication');
+    }
+  }
+
+  useEffect(() => { 
+    manageSession();
+  }, []);
+
   return (
     <AuthContext.Provider value={{
       login,
-      logout
+      logout,
+      userLogged,
+      getToken
     }}>
       {props.children}
     </AuthContext.Provider>

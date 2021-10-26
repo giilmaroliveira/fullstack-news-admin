@@ -1,8 +1,9 @@
 interface FormInputProps {
   label: string;
-  value: string;
+  value?: string;
   type?: 'email' | 'text' | 'password';
-  changeValue: (newValue: string) => void;
+  changeValue?: (newValue: string) => void;
+  readOnly?: boolean;
 }
 
 export default function FormInput(props: FormInputProps) {
@@ -12,6 +13,7 @@ export default function FormInput(props: FormInputProps) {
       <input 
         value={props.value}
         type={props.type ?? 'text'}
+        readOnly={props?.readOnly}
         onChange={e => props.changeValue?.(e.target.value)}
         className={`
           px-4 py-3 rounded-lg bg-gray-200 mt-2
